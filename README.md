@@ -15,8 +15,11 @@ a
 Commons Attribution-NonCommercial-ShareAlike 4.0 International
 License</a>. <!-- badges: end -->
 
-The repository of RStudio project and the supplementary materials for
-the paper on the topic of constructional equivalence based on [this
+The repository of [RStudio
+project](https://r4ds.had.co.nz/workflow-projects.html) (Wickham &
+Grolemund [2017](#ref-wickham_r_2017):chap. 8) and the supplementary
+materials for the paper on the topic of constructional equivalence based
+on [this
 project](https://udayananetworking.unud.ac.id/lecturer/research/880-gede-primahadi-wijaya-rajeg/a-model-for-translation-study-based-on-english-indonesian-translation-database-and-its-pedagogical-implication-1179)
 (Rajeg et al. [2021](#ref-rajeg_material_2021)). The paper is in
 preparation and is expected to be submitted in 2022.
@@ -35,6 +38,13 @@ TERJEMAHAN BERBASIS BANK DATA TERJEMAHAN DIGITAL INGGRIS-INDONESIA DAN
 IMPLIKASI PEDAGOGISNYA*. Open Science Framework.
 doi:[10.17605/OSF.IO/Y6ESA](https://doi.org/10.17605/OSF.IO/Y6ESA).
 <https://osf.io/y6esa/>.
+
+</div>
+
+<div id="ref-wickham_r_2017">
+
+Wickham, Hadley & Garrett Grolemund. 2017. *R for Data Science*. Canada:
+O’Reilly. <http://r4ds.had.co.nz/> (7 March, 2017).
 
 </div>
 
