@@ -9,6 +9,7 @@ Rajeg](https://udayananetworking.unud.ac.id/lecturer/880-gede-primahadi-wijaya-r
 <!-- badges: start -->
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
+[![](https://img.shields.io/badge/doi-10.17605/OSF.IO/PZC8Y-lightblue.svg)](https://doi.org/10.17605/OSF.IO/PZC8Y)
 <br />The supplementary materials in this repository are licensed under
 a
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative
@@ -18,8 +19,8 @@ License</a>. <!-- badges: end -->
 The repository of [RStudio
 project](https://r4ds.had.co.nz/workflow-projects.html) (Wickham &
 Grolemund [2017](#ref-wickham_r_2017):chap. 8) and the supplementary
-materials for the paper on the topic of constructional equivalence based
-on [this
+materials (Rajeg [2021](#ref-Rajeg_Constructional_equivalence_in_2021))
+for the paper on the topic of constructional equivalence based on [this
 project](https://udayananetworking.unud.ac.id/lecturer/research/880-gede-primahadi-wijaya-rajeg/a-model-for-translation-study-based-on-english-indonesian-translation-database-and-its-pedagogical-implication-1179)
 (Rajeg et al. [2021](#ref-rajeg_material_2021)). The paper is in
 preparation and is expected to be submitted in 2022.
@@ -29,6 +30,15 @@ More to come…
 # References
 
 <div id="refs" class="references">
+
+<div id="ref-Rajeg_Constructional_equivalence_in_2021">
+
+Rajeg, Gede Primahadi Wijaya. 2021. *Constructional equivalence in the
+Indonesian translations of ROB and STEAL*.
+doi:[10.17605/OSF.IO/PZC8Y](https://doi.org/10.17605/OSF.IO/PZC8Y).
+<https://github.com/gederajeg/constructional-equivalence>.
+
+</div>
 
 <div id="ref-rajeg_material_2021">
 
