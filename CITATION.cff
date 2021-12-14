@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use any materials from this repository, please cite it as below."
+authors:
+  - family-names: Rajeg
+    given-names: Gede Primahadi Wijaya
+    orcid: https://orcid.org/0000-0002-2047-8621
+title: "Constructional equivalence in the Indonesian translations of ROB and STEAL"
+version: 0.0.1
+doi: 10.17605/OSF.IO/PZC8Y
+date-released: 2021-12-14
+license: CC BY-NC-SA 4.0 International
+repository-code: "https://github.com/gederajeg/constructional-equivalence"
