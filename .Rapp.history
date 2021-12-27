@@ -1,0 +1,57 @@
+library(tidyverse)#
+#
+theft_verbs <- readRDS("freq-THEFT-verbs.rds")#
+#
+# frekuensi lemma ROB#
+sum(subset(theft_verbs, grepl("^rob", verbs, perl = TRUE), freq))#
+#
+# breakdown frekuensi bentuk kata dengan lemma ROB#
+subset(theft_verbs, grepl("^rob", verbs, perl = TRUE))#
+#
+# frekuensi lemma STEAL#
+sum(subset(theft_verbs, grepl("^st(ea|ol)", verbs, perl = TRUE), freq))#
+#
+# breakdown frekuensi bentuk kata dengan lemma STEAL#
+subset(theft_verbs, grepl("^st(ea|ol)", verbs, perl = TRUE))#
+#
+# visualisasi frekuensi bentuk lema ROB dan STEAL#
+rs <- subset(theft_verbs, grepl("^(st(ea|ol)|rob)", verbs, perl = TRUE))#
+rs <- dplyr::mutate(rs, lemma = ifelse(grepl("^rob", verbs), "ROB", "STEAL"))
+rs
+ggsave('figs/plot-freq-verba-R&S.png', dpi = 800, width = 8, height = 5, units = "in")
+rs %>% #
+  ggplot(aes(x = verbs, y = freq, group = lemma, fill = lemma)) + #
+  geom_col() + #
+  scale_fill_grey() +#
+  geom_text(aes(label = freq), vjust = -.3) +#
+  theme_light() +#
+  labs(y = "Token frequency", #
+       x = "Verb forms", #
+       fill = "Lemma") +#
+  ggsave('figs/plot-freq-verba-R&S.png', dpi = 800, width = 8, height = 5, units = "in")
+rs %>% #
+  ggplot(aes(x = verbs, y = freq, group = lemma, fill = lemma)) + #
+  geom_col() + #
+  scale_fill_grey() +#
+  geom_text(aes(label = freq), vjust = -.3) +#
+  theme_light() +#
+  labs(y = "Token frequency", #
+       x = "Verb forms", #
+       fill = "Lemma")
+rs %>% #
+  ggplot(aes(x = verbs, y = freq, group = lemma, fill = lemma)) + #
+  geom_col() + #
+  scale_fill_grey() +#
+  geom_text(aes(label = freq), vjust = -.3) +#
+  theme_light() +#
+  labs(y = "Token frequency", x = "Verb forms", fill = "Lemma") +#
+  ggsave('figs/plot-freq-verba-R&S.png', dpi = 800, width = 8, height = 5, units = "in")
+rs_p <- rs %>% #
+  ggplot(aes(x = verbs, y = freq, group = lemma, fill = lemma)) + #
+  geom_col() + #
+  scale_fill_grey() +#
+  geom_text(aes(label = freq), vjust = -.3) +#
+  theme_light() +#
+  labs(y = "Token frequency", x = "Verb forms", fill = "Lemma")
+rs_p
+rs_p +  ggsave('figs/plot-freq-verba-R&S.png', dpi = 800, width = 8, height = 5, units = "in")
