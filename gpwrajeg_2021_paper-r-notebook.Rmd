@@ -1,0 +1,903 @@
+---
+title: "R Notebook for *A corpus-based study of constructional equivalence for the Indonesian translation of ROB and STEAL*"
+author: '[Gede Primahadi Wijaya Rajeg](https://udayananetworking.unud.ac.id/lecturer/880-gede-primahadi-wijaya-rajeg) <a itemprop="sameAs" content="https://orcid.org/0000-0002-2047-8621" href="https://orcid.org/0000-0002-2047-8621" target="orcid.widget" rel="noopener noreferrer" style="vertical-align:top;"><img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" style="width:1em;margin-right:.5em;" alt="ORCID iD icon"></a>'
+output: 
+  html_notebook:
+    fig_caption: yes
+    fig_width: 6
+    fig_retina: 2
+    toc: true
+    toc_float: true
+---
+
+```{r setup, message = FALSE, warning = FALSE, include = FALSE}
+# global option chunck
+knitr::opts_chunk$set(fig.width = 7, 
+                      fig.asp = 0.618,
+                      fig.retina = 2,
+                      dpi = 300,
+                      dev = "png",
+                      echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE)
+library(tidyverse)
+library(readxl)
+library(RColorBrewer)
+library(vcd)
+```
+
+
+The R codes in this notebook use the following packages: tidyverse, readxl, RColorBrewer, and vcd.
+
+If you use, or are inspired by, the codes, the data, and analyses from this study, you can cite this R Notebook and the paper as well:
+
+- citation for the R Notebook and related materials in this paper:
+
+  > Rajeg, G. P. W. (2021a). Constructional equivalence in the Indonesian translations of ROB and STEAL (Version 0.0.1). https://doi.org/10.17605/OSF.IO/PZC8Y
+
+- citation for the paper (to be updated when published):
+
+```{r load-main-ROB-and-STEAL-data, message = FALSE, warning = FALSE, include = TRUE}
+rob <- readr::read_tsv("ROB_sample_conc_main.tsv")
+steal <- readr::read_tsv("STEAL_sample_conc_main.tsv")
+```
+
+### code preparation for data of ROB
+
+```{r profiled-participants-rob}
+rob_eng_profiled_participants <- rob %>% 
+  # verbal construction of ROB
+  filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "(INTR|NOMINAL)$", negate = TRUE)) %>%
+  count(ROLE_ENG_THIEF) %>% 
+  rename(is_mentioned = ROLE_ENG_THIEF) %>% 
+  mutate(role = "thief") %>% 
+  bind_rows(rob %>% 
+              # verbal construction of ROB
+              filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "(INTR|NOMINAL)$", 
+                                                 negate = TRUE)) %>%
+              mutate(ROLE_ENG_TARGET = as.logical(ROLE_ENG_TARGET)) %>% 
+              count(ROLE_ENG_TARGET) %>% 
+              rename(is_mentioned = ROLE_ENG_TARGET) %>% 
+              mutate(role = "target")) %>% 
+  bind_rows(rob %>% 
+              # verbal construction of ROB
+              filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "(INTR|NOMINAL)$", 
+                                                 negate = TRUE)) %>% 
+              mutate(ROLE_ENG_GOODS = as.logical(ROLE_ENG_GOODS)) %>% 
+              count(ROLE_ENG_GOODS) %>% 
+              rename(is_mentioned = ROLE_ENG_GOODS) %>% 
+              mutate(role = "goods")) %>% 
+  mutate(role = factor(role, levels = c("thief", "target", "goods"))) %>% 
+  group_by(role) %>% 
+  arrange(role, desc(is_mentioned)) %>% 
+  mutate(perc_mention = round(n/sum(n) * 100, 2)) %>% 
+  ungroup()
+
+# binomial test of the profiled participant roles for ROB
+rob_eng_profiled_participants_binom <- rob_eng_profiled_participants %>% 
+  pivot_wider(-perc_mention, 
+              names_from = is_mentioned, 
+              values_from = n, 
+              values_fill = 0L) %>% 
+  mutate(n = `TRUE`+`FALSE`, 
+         pbin = map_dbl(pmap(list(x = `TRUE`, n = n), binom.test), "p.value"), 
+         pholm = p.adjust(pbin, method = "holm"),
+         signif = "ns", 
+         signif = if_else(pholm < 0.05, "*", signif), 
+         signif = if_else(pholm < 0.01, "**", signif), 
+         signif = if_else(pholm < 0.001, "***", signif),
+         lemma = "ROB")
+```
+
+```{r profiled-participants-rob-core-argument}
+rob_eng_profiled_participants_coreargs <- rob %>% 
+  # verbal construction of ROB
+  filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "(INTR|NOMINAL)$", negate = TRUE)) %>% 
+  count(ROLE_ENG_THIEF, SYN_ENG_THIEF) %>% 
+  rename(is_mentioned = ROLE_ENG_THIEF,
+         syntax = SYN_ENG_THIEF) %>% 
+  mutate(role = "thief") %>% 
+  bind_rows(rob %>% 
+              # verbal construction of ROB
+              filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "(INTR|NOMINAL)$", 
+                                                 negate = TRUE)) %>% 
+              mutate(ROLE_ENG_TARGET = as.logical(ROLE_ENG_TARGET)) %>% 
+              count(ROLE_ENG_TARGET, SYN_ENG_TARGET) %>% 
+              rename(is_mentioned = ROLE_ENG_TARGET,
+                     syntax = SYN_ENG_TARGET) %>% 
+              mutate(role = "target")) %>% 
+  bind_rows(rob %>% 
+              # verbal construction of ROB
+              filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "(INTR|NOMINAL)$", 
+                                                 negate = TRUE)) %>% 
+              mutate(ROLE_ENG_GOODS = as.logical(ROLE_ENG_GOODS)) %>% 
+              count(ROLE_ENG_GOODS, SYN_ENG_GOODS) %>% 
+              rename(is_mentioned = ROLE_ENG_GOODS,
+                     syntax = SYN_ENG_GOODS) %>% 
+              mutate(role = "goods")) %>% 
+  mutate(role = factor(role, levels = c("thief", "target", "goods")))
+rob_eng_profiled_participants_coreargs <- rob_eng_profiled_participants_coreargs %>% 
+  mutate(core_args = TRUE,
+         core_args = if_else(is.na(syntax), NA, core_args),
+         core_args = if_else(str_detect(syntax, "passive_AGENT|possessive_determiner|PP_complement"), 
+                             FALSE, core_args)) %>% 
+  group_by(role, core_args) %>% 
+  mutate(n_coreargs_by_role = sum(n)) %>% 
+  group_by(role) %>% 
+  arrange(role, desc(n_coreargs_by_role))
+
+rob_eng_profiled_participants_coreargs_distinct <- rob_eng_profiled_participants_coreargs %>% 
+  select(role, core_args, n_coreargs_by_role) %>% 
+  distinct() %>% 
+  filter(!is.na(core_args)) %>% 
+  arrange(role, desc(core_args)) %>% 
+  mutate(perc_coreargs_by_role = round(n_coreargs_by_role/sum(n_coreargs_by_role) * 100, digits = 1))
+
+# binomial test of the core profiled participant roles for ROB
+rob_eng_profiled_participants_coreargs_binom <- rob_eng_profiled_participants_coreargs_distinct %>% 
+  pivot_wider(-perc_coreargs_by_role, names_from = core_args, values_from = n_coreargs_by_role, values_fill = 0L) %>% 
+  mutate(n = `TRUE`+`FALSE`, 
+         pbin = map_dbl(pmap(list(x = `TRUE`, n = n), binom.test), "p.value"), 
+         pholm = p.adjust(pbin, method = "holm"),
+         signif = "ns", 
+         signif = if_else(pholm < 0.05, "*", signif), 
+         signif = if_else(pholm < 0.01, "**", signif), 
+         signif = if_else(pholm < 0.001, "***", signif),
+         lemma = "ROB",
+         perc_coreargs = round(`TRUE`/n * 100, 1),
+         perc_non_coreargs = round(`FALSE`/n * 100, 1))
+```
+
+### code preparation for data of STEAL
+
+```{r profiled-participants-steal}
+steal_eng_profiled_participants <- steal %>% 
+  # verbal construction of STEAL
+  filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "(INTR|NOMINAL|NP|_TRANS)$", negate = TRUE)) %>%
+  mutate(ROLE_ENG_THIEF = as.logical(ROLE_ENG_THIEF)) %>% 
+  count(ROLE_ENG_THIEF) %>% 
+  rename(is_mentioned = ROLE_ENG_THIEF) %>% 
+  mutate(role = "thief") %>% 
+  bind_rows(steal %>% 
+              # verbal construction of STEAL
+              filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "(INTR|NOMINAL|NP|_TRANS)$", 
+                                                 negate = TRUE)) %>% 
+              mutate(ROLE_ENG_TARGET = as.logical(ROLE_ENG_TARGET)) %>% 
+              count(ROLE_ENG_TARGET) %>% 
+              rename(is_mentioned = ROLE_ENG_TARGET) %>% 
+              mutate(role = "target")) %>% 
+  bind_rows(steal %>% 
+              # verbal construction of STEAL
+              filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "(INTR|NOMINAL|NP|_TRANS)$", 
+                                                 negate = TRUE)) %>% 
+              filter(!is.na(ROLE_ENG_GOODS)) %>% 
+              mutate(ROLE_ENG_GOODS = as.logical(ROLE_ENG_GOODS)) %>% 
+              count(ROLE_ENG_GOODS) %>% 
+              rename(is_mentioned = ROLE_ENG_GOODS) %>% 
+              mutate(role = "goods")) %>% 
+  mutate(role = factor(role, levels = c("thief", "target", "goods"))) %>% 
+  group_by(role) %>% 
+  arrange(role, desc(is_mentioned)) %>% 
+  mutate(perc_mention = round(n/sum(n) * 100, 2)) %>% 
+  ungroup()
+
+# binomial test of the profiled participant roles for STEAL
+steal_eng_profiled_participants_binom <- steal_eng_profiled_participants %>% 
+  pivot_wider(-perc_mention, names_from = is_mentioned, values_from = n, values_fill = 0L) %>% 
+  mutate(n = `TRUE`+`FALSE`, 
+         pbin = map_dbl(pmap(list(x = `TRUE`, n = n), binom.test), "p.value"), 
+         pholm = p.adjust(pbin, method = "holm"),
+         signif = "ns", 
+         signif = if_else(pholm < 0.05, "*", signif), 
+         signif = if_else(pholm < 0.01, "**", signif), 
+         signif = if_else(pholm < 0.001, "***", signif),
+         lemma = "STEAL")
+```
+
+```{r profiled-participants-steal-core-argument}
+steal_eng_profiled_participants_coreargs <- steal %>% 
+  # verbal construction of STEAL
+  filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "(INTR|NOMINAL|NP|_TRANS)$", negate = TRUE)) %>%
+  count(ROLE_ENG_THIEF, SYN_ENG_THIEF) %>% 
+  rename(is_mentioned = ROLE_ENG_THIEF,
+         syntax = SYN_ENG_THIEF) %>% 
+  mutate(role = "thief",
+         is_mentioned = as.logical(is_mentioned)) %>% 
+  bind_rows(steal %>% 
+              # verbal construction of STEAL
+              filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "(INTR|NOMINAL|NP|_TRANS)$", 
+                                                 negate = TRUE)) %>% 
+              mutate(ROLE_ENG_TARGET = as.logical(ROLE_ENG_TARGET)) %>% 
+              count(ROLE_ENG_TARGET, SYN_ENG_TARGET) %>% 
+              rename(is_mentioned = ROLE_ENG_TARGET,
+                     syntax = SYN_ENG_TARGET) %>% 
+              mutate(role = "target")) %>% 
+  bind_rows(steal %>% 
+              # verbal construction of STEAL
+              filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "(INTR|NOMINAL|NP|_TRANS)$", 
+                                                 negate = TRUE)) %>% 
+              mutate(ROLE_ENG_GOODS = as.logical(ROLE_ENG_GOODS)) %>% 
+              count(ROLE_ENG_GOODS, SYN_ENG_GOODS) %>% 
+              rename(is_mentioned = ROLE_ENG_GOODS,
+                     syntax = SYN_ENG_GOODS) %>% 
+              mutate(role = "goods")) %>% 
+  mutate(role = factor(role, levels = c("thief", "target", "goods")))
+steal_eng_profiled_participants_coreargs <- steal_eng_profiled_participants_coreargs %>% 
+  mutate(core_args = TRUE,
+         core_args = if_else(is.na(syntax), NA, core_args),
+         core_args = if_else(str_detect(syntax, "passive_AGENT|possessive|(?i)PP_complement"), 
+                             FALSE, core_args)) %>% 
+  group_by(role, core_args) %>% 
+  mutate(n_coreargs_by_role = sum(n)) %>% 
+  group_by(role) %>% 
+  arrange(role, desc(n_coreargs_by_role))
+
+steal_eng_profiled_participants_coreargs_distinct <- steal_eng_profiled_participants_coreargs %>% 
+  select(role, core_args, n_coreargs_by_role) %>% 
+  distinct() %>% 
+  filter(!is.na(core_args)) %>% 
+  arrange(role, desc(core_args)) %>% 
+  mutate(perc_coreargs_by_role = round(n_coreargs_by_role/sum(n_coreargs_by_role) * 100, digits = 1))
+
+
+# binomial test of the core profiled participant roles for STEAL
+steal_eng_profiled_participants_coreargs_binom <- steal_eng_profiled_participants_coreargs_distinct %>% 
+  pivot_wider(-perc_coreargs_by_role, names_from = core_args, values_from = n_coreargs_by_role, values_fill = 0L) %>% 
+  mutate(n = `TRUE`+`FALSE`, 
+         pbin = map_dbl(pmap(list(x = `TRUE`, n = n), binom.test), "p.value"),
+         pholm = p.adjust(pbin, method = "holm"),
+         signif = "ns", 
+         signif = if_else(pholm < 0.05, "*", signif), 
+         signif = if_else(pholm < 0.01, "**", signif), 
+         signif = if_else(pholm < 0.001, "***", signif),
+         lemma = "STEAL",
+         perc_coreargs = round(`TRUE`/n * 100, 1),
+         perc_non_coreargs = round(`FALSE`/n * 100, 1))
+```
+
+
+### Analysis for profiled participant roles in English only
+
+```{r profiled-participants-ENG-all-chisq}
+eng_profiled_participants <- bind_rows(rob_eng_profiled_participants_binom,
+                                       steal_eng_profiled_participants_binom) %>% 
+  mutate(perc_mention = round((`TRUE`/n) * 100, 2))
+
+eng_profiled_participants_matrix <- eng_profiled_participants %>% 
+  select(role, lemma, `TRUE`) %>% 
+  pivot_wider(names_from = lemma, values_from = `TRUE`) %>% 
+  data.frame(row.names = 1) %>% 
+  as.matrix()
+names(attr(eng_profiled_participants_matrix, "dimnames")) <- c("Participant roles", "Lemmas")
+
+eng_profiled_participants_chisq <- chisq.test(eng_profiled_participants_matrix)
+eng_profiled_participants_effsizes <- vcd::assocstats(eng_profiled_participants_matrix)
+eng_profiled_participants_cramer <- round(eng_profiled_participants_effsizes$cramer, 3)
+```
+
+```{r profiled-participants-ENG-all-chisq-core-args}
+eng_profiled_participants_coreargs <- bind_rows(rob_eng_profiled_participants_coreargs_binom,
+                                                steal_eng_profiled_participants_coreargs_binom)
+
+eng_profiled_participants_matrix_coreargs <- eng_profiled_participants_coreargs %>% 
+  select(role, lemma, `TRUE`) %>% 
+  pivot_wider(names_from = lemma, values_from = `TRUE`) %>% 
+  data.frame(row.names = 1) %>% 
+  as.matrix()
+names(attr(eng_profiled_participants_matrix_coreargs, "dimnames")) <- c("Participant roles", "Lemmas")
+
+eng_profiled_participants_chisq_coreargs <- chisq.test(eng_profiled_participants_matrix_coreargs)
+eng_profiled_participants_effsizes_coreargs <- vcd::assocstats(eng_profiled_participants_matrix_coreargs)
+eng_profiled_participants_cramer_coreargs <- round(eng_profiled_participants_effsizes_coreargs$cramer, 2)
+```
+
+
+```{r plot-profiled-participants-ENG-all-idn-lang-OLD, fig.cap = "Distribusi peran partisipan verba ROB dan STEAL", fig.asp = 0.718, eval = FALSE, echo = FALSE}
+p1_idn <- eng_profiled_participants %>% 
+  ggplot(aes(x = role, y = perc_mention, fill = lemma)) +
+  geom_col(position = position_dodge(.9)) +
+  geom_text(aes(label = paste("N=", `TRUE`, sep = "")),
+            position = position_dodge(.9),
+            vjust = -.5) +
+  geom_text(aes(label = paste(perc_mention, "%", sep = "")),
+            position = position_dodge(.9),
+            vjust = 1.5,
+            col = c(rep("black", 3), rep("white", 3))) +
+  # group_by(role) %>% 
+  # mutate(perc = round(`TRUE`/sum(`TRUE`) * 100, 2)) %>% 
+  # ggplot(aes(x = role, y = perc, fill = lemma)) +
+  # geom_col() +
+  # geom_text(aes(label = `TRUE`),
+  #           position = position_stack(.5),
+  #           col = c(rep("white", 3), rep("black", 3))) +
+  theme_bw() +
+  labs(y = "%\n(of explicit mention)",
+       x = "Participant roles",
+       fill = "Lemma") +
+  theme(axis.text = element_text(size = 13),
+        axis.title = element_text(size = 15),
+        legend.text = element_text(size = 13),
+        legend.title = element_text(size = 15)) +
+  scale_fill_manual(values = hcl.colors(palette = "RdYlBu", n = 5)[c(3, 5)]) +
+  scale_x_discrete(labels = c("THIEF", "TARGET", "GOODS"))
+
+p1_idn
+# ggsave("figs/plot-profiled-participants-eng.png", plot = p1_idn, height = 4.5, width = 7, dpi = 300)
+```
+
+```{r plot-profiled-participants-ENG-all-idn-lang-OLD-combined-core-non-core, fig.cap = "Distribusi peran partisipan verba ROB dan STEAL", fig.asp = 0.718, eval = FALSE, echo = FALSE}
+p1_idn <- eng_profiled_participants %>% 
+  mutate(role = toupper(role),
+         role = factor(role, levels = c("THIEF", "TARGET", "GOODS"))) %>% 
+  ggplot(aes(x = lemma, y = perc_mention, fill = role)) +
+  geom_col(position = position_dodge(.9)) +
+  geom_text(aes(label = paste("N=", `TRUE`, sep = "")),
+            position = position_dodge(.9),
+            vjust = -.5) +
+  geom_text(aes(label = paste(perc_mention, "%", sep = "")),
+            position = position_dodge(.9),
+            vjust = 1.5,
+            col = "white") +
+  theme_light() +
+  labs(y = "%\n(of explicit mention)",
+       x = "Lemma",
+       fill = "Participant roles") +
+  theme(axis.text = element_text(size = 13),
+        axis.title = element_text(size = 15),
+        legend.text = element_text(size = 13),
+        legend.title = element_text(size = 15))
+
+p1_idn
+# ggsave("figs/plot-profiled-participants-eng.png", plot = p1_idn, height = 4.5, width = 7, dpi = 300)
+```
+
+```{r plot-profiled-participants-ENG-all-core-args, fig.cap = "Distribusi peran partisipan verba ROB dan STEAL", fig.asp = 0.718}
+p1_idn <- eng_profiled_participants_coreargs %>% 
+  mutate(role = toupper(role),
+         role = factor(role, levels = c("THIEF", "TARGET", "GOODS"))) %>% 
+  ggplot(aes(x = lemma, y = perc_coreargs, fill = role)) +
+  geom_col(position = position_dodge(.9)) +
+  geom_text(aes(label = paste("N=", `TRUE`, sep = "")),
+            position = position_dodge(.9),
+            vjust = if_else(eng_profiled_participants_coreargs$`TRUE` > 1, -.5, -2)) +
+  geom_text(aes(label = paste(perc_coreargs, "%", sep = "")),
+            position = position_dodge(.9),
+            vjust = if_else(eng_profiled_participants_coreargs$`TRUE` > 1, 1.5, -.5),
+            col = if_else(eng_profiled_participants_coreargs$`TRUE` > 1, "white", "gray50")) +
+  theme_light() +
+  labs(y = "%\n(in core syntactic arguments)",
+       x = "Lemma",
+       fill = "Participant roles") +
+  theme(axis.text = element_text(size = 13),
+        axis.title = element_text(size = 15),
+        legend.text = element_text(size = 13),
+        legend.title = element_text(size = 15))
+
+p1_idn
+# ggsave("figs/plot-profiled-participants-eng.png", plot = p1_idn, height = 4.5, width = 7, dpi = 300)
+```
+
+
+From the `r rob_eng_profiled_participants_coreargs_binom %>% filter(role == "thief") %>% pull(n)` cases of the encoding of THIEF of ROB, `r rob_eng_profiled_participants_coreargs_binom %>% filter(role == "thief") %>% pull(perc_coreargs)`% (N=`r rob_eng_profiled_participants_coreargs_binom %>% filter(role == "thief") %>% .[[2]]`) is mapped onto the core function of grammatical subject, which can be in the active, main clause (N=`r rob_eng_profiled_participants_coreargs %>% filter(role == "thief", is_mentioned, core_args) %>% .[[1,3]]`), relative clause (N=`r rob_eng_profiled_participants_coreargs %>% filter(role == "thief", is_mentioned, core_args) %>% .[[2,3]]`), and subordinate clause (N=`r rob_eng_profiled_participants_coreargs %>% filter(role == "thief", is_mentioned, core_args) %>% .[[3,3]]`). The remaining one token shows the mention of the THIEF in a prepositional phrase of passive agent (@rob_thief_passive_agent).
+
+(@rob_thief_passive_agent) ... and Hunt getting robbed right next door and by the same guy who rescued us...
+
+As for STEAL, all occurrences of the THIEF role are profiled as the grammatical subject in the active, main clause (N=`r steal_eng_profiled_participants_coreargs %>% filter(role == "thief", is_mentioned, core_args) %>% .[[1,3]]`), relative clause (N=`r steal_eng_profiled_participants_coreargs %>% filter(role == "thief", is_mentioned, core_args) %>% .[[2,3]]`), and subordinate clause (N=`r steal_eng_profiled_participants_coreargs %>% filter(role == "thief", is_mentioned, core_args) %>% .[[3,3]]`).
+
+
+
+From the `r rob_eng_profiled_participants_coreargs_binom %>% filter(role == "target") %>% pull(n)` cases of the encoding of TARGET of ROB, `r rob_eng_profiled_participants_coreargs_binom %>% filter(role == "target") %>% pull(perc_coreargs)`% (N=`r rob_eng_profiled_participants_coreargs_binom %>% filter(role == "target") %>% .[[2]]`) is mapped onto the core functions of (i) direct object of ROB in the active, main clause (N=`r rob_eng_profiled_participants_coreargs %>% filter(role == "target", is_mentioned, core_args, syntax == "direct_object") %>% pull(n)`) and (ii) passive subject of ROB in the passive, main clause (N=`r rob_eng_profiled_participants_coreargs %>% filter(role == "target", is_mentioned, core_args, syntax == "passive_subject") %>% pull(n)`). The remaining `r rob_eng_profiled_participants_coreargs %>% filter(role == "target", is_mentioned, !core_args) %>% pull(n) %>% sum` tokens map the TARGET onto a preposition phrase (@rob_target_pp_complement) or possessive determiner in a noun phrase (@rob_target_pp_complement).
+
+(@rob_target_pp_complement) ...that three elderly gentleman robbed 2.3 million dollar from the Williamsburg Savings Bank.
+(@rob_target_possessive) We rob her advantage.
+
+From the `r rob_eng_profiled_participants_coreargs_binom %>% filter(role == "goods") %>% pull(n)` cases of the encoding of GOODS of ROB, only `r rob_eng_profiled_participants_coreargs_binom %>% filter(role == "goods") %>% pull(perc_coreargs)`% (N=`r rob_eng_profiled_participants_coreargs_binom %>% filter(role == "goods") %>% .[[2]]`) is mapped onto the core functions of the direct object of ROB in the active, main clause (N=`r rob_eng_profiled_participants_coreargs %>% filter(role == "goods", is_mentioned, core_args, syntax == "direct_object") %>% pull(n)`) (see examples @rob_target_pp_complement and @rob_target_possessive). The predominant cases (`r rob_eng_profiled_participants_coreargs_binom %>% filter(role == "goods") %>% pull(perc_non_coreargs)`%; N=`r rob_eng_profiled_participants_coreargs_binom %>% filter(role == "goods") %>% .[[3]]`) map the GOODS of ROB onto an oblique preposition phrase, as suggested in the literature (Goldberg 1995).
+
+
+
+```{r plot-profiled-participants-ENG-all-assocplot-notebook, fig.asp = 0.818, fig.cap = "Association plot for the profiled participants of ROB and STEAL", eval = FALSE, echo = FALSE}
+# png("figs/plot-assocplot-profiled-roles-english.png", width = 7, height = 6, units = "in", res = 600)
+vcd::assoc(eng_profiled_participants_matrix, shade = TRUE, legend = legend_resbased(fontsize = 10), gp_labels = gpar(fontsize = 9), labeling_args = list(rot_labels = 0, set_varnames = c(Lemmas = "Lemma", `Participant roles` = "Participants"), set_labels = list(`Participant roles` = c("THIEF", "TARGET", "GOODS"))))
+# dev.off()
+```
+
+```{r plot-profiled-participants-ENG-all-assocplot-notebook-coreargs, fig.asp = 0.818, fig.cap = "Association plot for the profiled participants of ROB and STEAL"}
+# png("figs/plot-assocplot-profiled-roles-english.png", width = 7, height = 6, units = "in", res = 600)
+vcd::assoc(eng_profiled_participants_matrix_coreargs, shade = TRUE, legend = legend_resbased(fontsize = 10), gp_labels = gpar(fontsize = 9), labeling_args = list(rot_labels = 0, set_varnames = c(Lemmas = "Lemma", `Participant roles` = "Participants"), set_labels = list(`Participant roles` = c("THIEF", "TARGET", "GOODS"))))
+# dev.off()
+```
+
+
+
+```{r data-preparation}
+# only take the transitive verbal and gerundial usages of ROB and STEAL
+steal1 <- steal %>% 
+  filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "(INTR|NOMINAL|NP|_TRANS)$", negate = TRUE)) %>% # verbal construction of ROB
+  mutate(across(matches("^ROLE_(ENG|IDN)_"), as.logical))
+
+rob1 <- rob %>% 
+  filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "(INTR|NOMINAL)$", negate = TRUE)) %>% # verbal construction of ROB
+  mutate(across(matches("^ROLE_(ENG|IDN)_"), as.logical),
+         SYN_IDN_TARGET = replace(SYN_IDN_TARGET, ROLE_IDN_TARGET == FALSE & SYN_IDN_TARGET == "direct_object", NA))
+```
+
+
+
+```{r cross-tabulation-and-signif-test-THIEF}
+rob_thief_profile_eng_idn <- rob1 %>% 
+  mutate(core_args = if_else(SYN_ENG_THIEF == "passive_AGENT", "FALSE", "TRUE"),
+         core_args = if_else(is.na(SYN_ENG_THIEF), "NA", core_args)) %>% 
+  filter(core_args != "FALSE") %>% # select only the core argument of THIEF in English
+  count(ROLE_ENG_THIEF, ROLE_IDN_THIEF) %>% 
+  mutate(across(where(is.logical), function(x) ifelse(x == FALSE, "THIEF_not_mentioned", "THIEF_mentioned"))) %>% 
+  rename(English = ROLE_ENG_THIEF,
+         Indonesian = ROLE_IDN_THIEF) %>% 
+  arrange(desc(n))
+rob_thief_profile_eng_idn_matrix <- rob_thief_profile_eng_idn %>% 
+  pivot_wider(names_from = Indonesian, values_from = n, values_fill = 0L) %>% 
+  column_to_rownames("English") %>% 
+  as.matrix()
+names(attr(rob_thief_profile_eng_idn_matrix, "dimnames")) <- c("English", "Indonesian")
+rob_thief_profile_eng_idn_fye <- fisher.test(rob_thief_profile_eng_idn_matrix)
+rob_thief_profile_eng_idn_effsize <- vcd::assocstats(rob_thief_profile_eng_idn_matrix)
+rob_thief_profile_eng_idn_phicoeff <- round(rob_thief_profile_eng_idn_effsize$phi, 2)
+
+steal_thief_profile_eng_idn <- steal1 %>% 
+  count(ROLE_ENG_THIEF, ROLE_IDN_THIEF) %>% 
+  mutate(across(where(is.logical), function(x) ifelse(x == FALSE, "THIEF_not_mentioned", "THIEF_mentioned"))) %>% 
+  rename(English = ROLE_ENG_THIEF,
+         Indonesian = ROLE_IDN_THIEF) %>% 
+  arrange(desc(n))
+steal_thief_profile_eng_idn_matrix <- steal_thief_profile_eng_idn %>% 
+  pivot_wider(names_from = Indonesian, values_from = n, values_fill = 0L) %>% 
+  column_to_rownames("English") %>% 
+  as.matrix()
+names(attr(steal_thief_profile_eng_idn_matrix, "dimnames")) <- c("English", "Indonesian")
+steal_thief_profile_eng_idn_fye <- fisher.test(steal_thief_profile_eng_idn_matrix)
+steal_thief_profile_eng_idn_effsize <- vcd::assocstats(steal_thief_profile_eng_idn_matrix)
+steal_thief_profile_eng_idn_phicoeff <- round(steal_thief_profile_eng_idn_effsize$phi, 2)
+```
+
+
+
+```{r cross-tabulation-and-signif-test-GOODS}
+rob_goods_profile_eng_idn <- rob1 %>% 
+  mutate(core_args = if_else(SYN_ENG_GOODS == "PP_complement", "FALSE", "TRUE"),
+         core_args = if_else(is.na(SYN_ENG_GOODS), "NA", core_args)) %>% 
+  filter(core_args != "FALSE") %>% # select only the core argument of GOODS in English
+  count(ROLE_ENG_GOODS, ROLE_IDN_GOODS) %>% 
+  mutate(across(where(is.logical), function(x) ifelse(x == FALSE, "GOODS_not_mentioned", "GOODS_mentioned"))) %>% 
+  rename(English = ROLE_ENG_GOODS,
+         Indonesian = ROLE_IDN_GOODS) %>% 
+  # arrange(desc(n))
+  arrange(English)
+rob_goods_profile_eng_idn_matrix <- rob_goods_profile_eng_idn %>% 
+  pivot_wider(names_from = Indonesian, values_from = n, values_fill = 0L) %>% 
+  column_to_rownames("English") %>% 
+  as.matrix()
+names(attr(rob_goods_profile_eng_idn_matrix, "dimnames")) <- c("English", "Indonesian")
+rob_goods_profile_eng_idn_matrix <- rob_goods_profile_eng_idn_matrix[ , c(2, 1)]
+rob_goods_profile_eng_idn_fye <- fisher.test(rob_goods_profile_eng_idn_matrix)
+rob_goods_profile_eng_idn_effsize <- vcd::assocstats(rob_goods_profile_eng_idn_matrix)
+rob_goods_profile_eng_idn_phicoeff <- round(rob_goods_profile_eng_idn_effsize$phi, 2)
+rob_goods_semantics_eng <- rob1 %>% 
+  count(SEM_ENG_GOODS, sort = TRUE) %>% 
+  filter(if_all(where(is.character), ~!is.na(.))) %>% 
+  mutate(perc = round(n/sum(n) * 100, 1))
+rob_goods_semantics_idn <- rob1 %>% 
+  count(SEM_IDN_GOODS, sort = TRUE) %>% 
+  filter(if_all(where(is.character), ~!is.na(.))) %>% 
+  mutate(perc = round(n/sum(n) * 100, 1))
+
+steal_goods_profile_eng_idn <- steal1 %>% 
+  count(ROLE_ENG_GOODS, ROLE_IDN_GOODS) %>% 
+  mutate(across(where(is.logical), function(x) ifelse(x == FALSE, "GOODS_not_mentioned", "GOODS_mentioned"))) %>% 
+  rename(English = ROLE_ENG_GOODS,
+         Indonesian = ROLE_IDN_GOODS) %>% 
+  # arrange(desc(n))
+  arrange(English)
+steal_goods_profile_eng_idn_matrix <- steal_goods_profile_eng_idn %>% 
+  pivot_wider(names_from = Indonesian, values_from = n, values_fill = 0L) %>% 
+  column_to_rownames("English") %>%  
+  as.matrix()
+names(attr(steal_goods_profile_eng_idn_matrix, "dimnames")) <- c("English", "Indonesian")
+steal_goods_profile_eng_idn_matrix <- steal_goods_profile_eng_idn_matrix[, c(2,1)]
+steal_goods_profile_eng_idn_fye <- fisher.test(steal_goods_profile_eng_idn_matrix)
+steal_goods_profile_eng_idn_effsize <- vcd::assocstats(steal_goods_profile_eng_idn_matrix)
+steal_goods_profile_eng_idn_phicoeff <- round(steal_goods_profile_eng_idn_effsize$phi, 2)
+steal_goods_semantics_eng <- steal1 %>% 
+  count(SEM_ENG_GOODS, sort = TRUE) %>% 
+  filter(if_all(where(is.character), ~!is.na(.))) %>% 
+  mutate(perc = round(n/sum(n) * 100, 1))
+steal_goods_semantics_idn <- steal1 %>% 
+  count(SEM_IDN_GOODS, sort = TRUE) %>% 
+  filter(if_all(where(is.character), ~!is.na(.))) %>% 
+  mutate(perc = round(n/sum(n) * 100, 1))
+```
+
+
+
+```{r cross-tabulation-and-signif-test-TARGETS}
+rob_target_profile_eng_idn <- rob1 %>%
+  filter(SYN_ENG_TARGET %in% c("direct_object", "passive_subject")) %>% 
+  mutate(ROLE_IDN_TARGET = replace(ROLE_IDN_TARGET, SYN_IDN_TARGET %in% c("nominal_modifier", "possessive_determiner", "pp_complement"), FALSE)) %>% 
+  count(ROLE_ENG_TARGET, ROLE_IDN_TARGET) %>%
+  mutate(across(where(is.logical), function(x) ifelse(x == FALSE, "TARGET_not_mentioned", "TARGET_mentioned"))) %>%
+  rename(English = ROLE_ENG_TARGET,
+         Indonesian = ROLE_IDN_TARGET) %>% 
+  arrange(desc(n))
+rob_target_profile_eng_idn_matrix <- rob_target_profile_eng_idn %>%
+  pivot_wider(names_from = Indonesian, values_from = n, values_fill = 0L) %>%
+  column_to_rownames("English") %>% 
+  data.frame() %>%
+  as.matrix()
+names(attr(rob_target_profile_eng_idn_matrix, "dimnames")) <- c("English", "Indonesian")
+
+# ROB's TARGET is always mentioned in English, but there are few cases where it is not mentioned in the translation. So there is only one variable of interest, namely (not-)mention of the Target in Indonesian, with two outcomes: mention vs. not mention of TARGET. This is the motivation to run the Exact Binomial Test
+rob_target_profile_eng_idn_binom <- binom.test(rob_target_profile_eng_idn_matrix)
+
+steal_target_profile_eng_idn <- steal1 %>% 
+  filter(!SYN_ENG_TARGET %in% c("possessive_determiner", "possessive_of-phrase", "pp_complement")) %>% 
+  count(ROLE_ENG_TARGET, ROLE_IDN_TARGET) %>% 
+  mutate(across(where(is.logical), function(x) ifelse(x == FALSE, "TARGET_not_mentioned", "TARGET_mentioned"))) %>% 
+  rename(English = ROLE_ENG_TARGET,
+         Indonesian = ROLE_IDN_TARGET) %>% 
+  arrange(desc(n))
+steal_target_profile_eng_idn_matrix <- steal_target_profile_eng_idn %>% 
+  pivot_wider(names_from = Indonesian, values_from = n, values_fill = 0L) %>% 
+  column_to_rownames("English") %>%  
+  as.matrix()
+names(attr(steal_target_profile_eng_idn_matrix, "dimnames")) <- c("English", "Indonesian")
+steal_target_profile_eng_idn_fye <- fisher.test(steal_target_profile_eng_idn_matrix)
+steal_target_profile_eng_idn_effsize <- vcd::assocstats(steal_target_profile_eng_idn_matrix)
+steal_target_profile_eng_idn_phicoeff <- steal_target_profile_eng_idn_effsize$phi
+```
+
+
+### constructional equivalence for the (de-)profiling of THIEF
+
+```{r plot-profiled-participants-THIEF-ENG-IDN-ROB-STEAL-barplot-idn-lang, fig.cap = "Kesepadanan konstruksional ke(tidak)munculan peran PENCURI lema ROB dan STEAL", fig.asp=.75}
+rs_thief_profile_eng_idn <- rob_thief_profile_eng_idn %>% 
+  mutate(Lemma = "ROB",
+         English = factor(English, levels = unique(English)),
+         Indonesian = factor(Indonesian, levels = unique(Indonesian))) %>%
+  bind_rows(steal_thief_profile_eng_idn %>% 
+              mutate(Lemma = "STEAL",
+                     English = factor(English, levels = unique(English)),
+                     Indonesian = factor(Indonesian, levels = unique(Indonesian)))) %>% 
+  mutate(Lemma = factor(Lemma, levels = c("ROB", "STEAL"))) %>% 
+  group_by(Lemma, English) %>% 
+  mutate(perc = n / sum(n) * 100,
+         perc = round(perc, digits = 1))
+
+
+p2_thief_eng_idn <- rs_thief_profile_eng_idn %>% 
+  # ggplot(aes(x = English, y = perc, fill = Indonesian)) +
+  # geom_col() + 
+  # geom_text(aes(label = ifelse(rs_thief_profile_eng_idn$perc > 5, n, "")),
+  #           position = position_stack(vjust = 0.5)) +
+  ggplot(aes(x = English, y = n, fill = Indonesian)) +
+  geom_col(position = position_dodge(.9)) +
+  geom_text(aes(label = paste(perc, "% (N=", n, ")", sep = "")),
+            position = position_dodge(.9), vjust = -.5, size = 3) +
+  facet_wrap(~Lemma, scales = "free_x") +
+  theme_bw() +
+  scale_x_discrete(labels = c("THIEF_profiled_Eng", "THIEF_not-profiled_Eng")) +
+  scale_fill_manual(values = brewer.pal(11, "RdYlGn")[c(7, 1)],
+                    labels = c("THIEF_profiled_Idn", "THIEF_not-profiled_Idn"),
+                    name = "Indonesian translation") +
+  labs(y = "Token frequency",
+       # y = "Persentase",
+       caption = "Numbers inside the brackets are the observed token frequencies.",
+       x = "English source text") +
+  theme(axis.text = element_text(size = 9),
+        axis.title = element_text(size = 15),
+        legend.title = element_text(size = 15),
+        legend.text = element_text(size = 9.75),
+        legend.position = "top",
+        plot.caption = element_text(size = 9))
+
+p2_thief_eng_idn
+
+# ggsave("figs/plot-profiled-participants-THIEF-all-verbs.png", plot = p2_thief_eng_idn, height = 5, width = 7.5, dpi = 300)
+```
+
+For ROB, `r rs_thief_profile_eng_idn %>% filter(Lemma == "ROB", English == "THIEF_mentioned", perc == max(perc)) %>% pull(perc)`% from the total `r rs_thief_profile_eng_idn %>% filter(Lemma == "ROB", English == "THIEF_mentioned") %>% pull(n) %>% sum()` cases where the THIEF is profiled in English,,,
+
+THIEF not profiled in English is in `r rs_thief_profile_eng_idn %>% filter(Lemma == "ROB", English == "THIEF_not_mentioned", perc == max(perc)) %>% pull(perc)`% of all `r rs_thief_profile_eng_idn %>% filter(Lemma == "ROB", English == "THIEF_not_mentioned") %>% pull(n) %>% sum()`
+
+This is a highly significant correlation with robust effect (Phi-coefficient = `r rob_thief_profile_eng_idn_phicoeff`).
+
+Odds ratio for the THIEF to be profiled in the English and Indonesian translation is `r format(round(rob_thief_profile_eng_idn_fye$estimate, 1), big.mark = ",")`.
+
+
+
+### constructional equivalence for the (de-)profiling of GOODS
+
+```{r plot-profiled-participants-GOODS-ENG-IDN-ROB-STEAL-barplot-idn-lang, fig.cap = "Kesepadanan konstruksional ke(tidak)munculan peran BARANG lema ROB dan STEAL", fig.asp=.75}
+
+rs_goods_profile_eng_idn <- rob_goods_profile_eng_idn %>% 
+  mutate(Lemma = "ROB",
+         English = factor(English, levels = unique(English)),
+         Indonesian = factor(Indonesian, levels = unique(Indonesian))) %>%
+  bind_rows(steal_goods_profile_eng_idn %>% 
+              mutate(Lemma = "STEAL",
+                     English = factor(English, levels = unique(English)),
+                     Indonesian = factor(Indonesian, levels = unique(Indonesian)))) %>% 
+  mutate(Lemma = factor(Lemma, levels = c("ROB", "STEAL"))) %>% 
+  group_by(Lemma, English) %>% 
+  mutate(perc = n / sum(n) * 100,
+         perc = round(perc, digits = 1))
+
+p2_goods_eng_idn <- rs_goods_profile_eng_idn %>% 
+  # ggplot(aes(x = English, y = perc, fill = Indonesian)) +
+  # geom_col() + 
+  # geom_text(aes(label = ifelse(rs_goods_profile_eng_idn$perc > 10, n, "")),
+  #           position = position_stack(vjust = 0.5)) +
+  ggplot(aes(x = English, y = n, fill = Indonesian)) +
+  geom_col(position = position_dodge(.9)) +
+  geom_text(aes(label = paste(perc, "% (N=", n, ")", sep = "")),
+            position = position_dodge(.9), vjust = -.5, size = 3) +
+  facet_wrap(~Lemma, scales = "free_x") +
+  theme_bw() +
+  scale_x_discrete(labels = c("GOODS_profiled_Eng", "GOODS_not-profiled_Eng")) +
+  scale_fill_manual(values = brewer.pal(11, "RdYlGn")[c(7, 1)],
+                    labels = c("GOODS_profiled_Idn", "GOODS_not-profiled_Idn"),
+                    name = "Indonesian translation") +
+  labs(y = "Token frequency",
+       # y = "Persentase",
+       caption = "Numbers inside the brackets are the observed token frequencies.",
+       x = "English source text") +
+  theme(axis.text = element_text(size = 9),
+        axis.title = element_text(size = 15),
+        legend.title = element_text(size = 15),
+        legend.text = element_text(size = 9.75),
+        legend.position = "top",
+        plot.caption = element_text(size = 9))
+p2_goods_eng_idn
+
+# ggsave("figs/plot-profiled-participants-GOODS-all-verbs.png", plot = p2_goods_eng_idn, height = 5, width = 7.5, dpi = 300)
+```
+
+From the total `r rs_goods_profile_eng_idn %>% filter(English == "GOODS_not_mentioned", Lemma == "ROB") %>% pull(n) %>% sum()` casen when the GOODS is not profiled by ROB, the Indonesian translations preserve this deprofiling in `r rs_goods_profile_eng_idn %>% filter(English == "GOODS_not_mentioned", Lemma == "ROB", perc == max(perc)) %>% pull(perc)`% of the cases.
+
+
+### constructional equivalence for the (de-)profiling of TARGET
+
+```{r plot-profiled-participants-TARGET-ENG-IDN-ROB-STEAL-barplot-idn-lang, fig.cap = "Kesepadanan konstruksional ke(tidak)munculan peran TARGET lema ROB dan STEAL", fig.asp=.75}
+rs_target_profile_eng_idn <- rob_target_profile_eng_idn %>% 
+  mutate(Lemma = "ROB",
+         English = factor(English, levels = unique(English)),
+         Indonesian = factor(Indonesian, levels = unique(Indonesian))) %>%
+  bind_rows(steal_target_profile_eng_idn %>% 
+              mutate(Lemma = "STEAL",
+                     English = factor(English, levels = unique(English)),
+                     Indonesian = factor(Indonesian, levels = unique(Indonesian)))) %>% 
+  mutate(Lemma = factor(Lemma, levels = c("ROB", "STEAL"))) %>% 
+  group_by(Lemma, English) %>% 
+  mutate(perc = n / sum(n) * 100,
+         perc = round(perc, digits = 1))
+
+
+p2_target_eng_idn <- rs_target_profile_eng_idn %>% 
+  # ggplot(aes(x = English, y = perc, fill = Indonesian)) +
+  # geom_col() + 
+  # geom_text(aes(label = ifelse(rs_target_profile_eng_idn$perc > 10, n, "")),
+  #           position = position_stack(vjust = 0.5)) +
+  ggplot(aes(x = English, y = n, fill = Indonesian)) +
+  geom_col(position = position_dodge(.9)) +
+  geom_text(aes(label = paste(perc, "% (N=", n, ")", sep = "")),
+            position = position_dodge(.9), vjust = -.5, size = 3) +
+  facet_wrap(~Lemma, scales = "free_x") +
+  theme_bw() +
+  scale_x_discrete(labels = c("TARGET_profiled_Eng", "TARGET_not-profiled_Eng")) +
+  scale_fill_manual(values = brewer.pal(11, "RdYlGn")[c(7, 1)],
+                    labels = c("TARGET_profiled_Idn", "TARGET_not-profiled_Idn"),
+                    name = "Indonesian translation") +
+  labs(y = "Token frequency",
+       # y = "Persentase",
+       caption = "Numbers inside the brackets are the observed token frequencies.",
+       x = "English source text") +
+  theme(axis.text = element_text(size = 9.5),
+        axis.title = element_text(size = 15),
+        legend.title = element_text(size = 15),
+        legend.text = element_text(size = 9.5),
+        legend.position = "top",
+        plot.caption = element_text(size = 9))
+p2_target_eng_idn
+
+# ggsave("figs/plot-profiled-participants-TARGET-all-verbs.png", plot = p2_target_eng_idn, height = 5, width = 7.5, dpi = 300)
+```
+
+
+
+
+### Construction Type for R&S and its translation equivalence
+
+```{r count-of-construction-patterns-for-each-lang-and-each-verb}
+## count of constructional patterns for ROB======
+### English data
+rob_cxn_eng <- rob1 %>% 
+  count(CXN_ENG, sort = TRUE, name = "N_CXN_ENG") %>% 
+  filter(!is.na(CXN_ENG), str_detect(CXN_ENG, "-PP$", negate = TRUE))
+
+### Indonesian translation data
+rob_cxn_idn <- rob1 %>% 
+  count(CXN_IDN, sort = TRUE, name = "N_CXN_IDN") %>% 
+  filter(!is.na(CXN_IDN))
+
+### x-tab for English and Indonesian data
+rob_cxn <- rob1 %>% 
+  count(CXN_ENG, CXN_IDN, sort = TRUE, name = "a") %>% 
+  filter(CXN_ENG != "TARGET-PP") %>% 
+  mutate(CXN_ENG_lab = factor(CXN_ENG, levels = unique(CXN_ENG)),
+         CXN_IDN_col = factor(CXN_IDN, levels = unique(CXN_IDN)))
+
+## count of constructional patterns for STEAL======
+### English data
+steal_cxn_eng <- steal1 %>% 
+  count(CXN_ENG, sort = TRUE, name = "N_CXN_ENG") %>% 
+  filter(!is.na(CXN_ENG))
+
+### Indonesian translation data
+steal_cxn_idn <- steal1 %>% 
+  count(CXN_IDN, sort = TRUE, name = "N_CXN_IDN") %>% 
+  filter(!is.na(CXN_IDN))
+
+### x-tab for English and Indonesian data
+steal_cxn <- steal1 %>% 
+  count(CXN_ENG, CXN_IDN, sort = TRUE, name = "a") %>% 
+  mutate(CXN_ENG_lab = factor(CXN_ENG, levels = unique(CXN_ENG)),
+         CXN_IDN_col = factor(CXN_IDN, levels = unique(CXN_IDN)))
+
+brew_paired <- brewer.pal(brewer.pal.info[rownames(brewer.pal.info) == "Paired", 1], "Paired")
+cxn_idn <- unique(c(rob_cxn$CXN_IDN, steal_cxn$CXN_IDN))
+brew_paired_selected <- brew_paired[c(2, 1, 6, 7, 3, 5)]
+names(brew_paired_selected) <- cxn_idn
+cxn_idn_colours <- brew_paired_selected
+
+```
+
+
+```{r define-statistical-functions}
+fye_compute <- function(a, b, c, d, alt) {
+  return(fisher.test(matrix(c(a, b, c, d), nrow = 2), alternative = alt)$p.value)
+}
+
+oddsratio <- function(a, b, c, d, alt) {
+  return(fisher.test(matrix(c(a, b, c, d), nrow = 2), alternative = alt)$estimate)
+}
+
+phicoefficient <- function(a, b, c, d) {
+  return(round(vcd::assocstats(matrix(c(a, b, c, d), nrow = 2))$phi, digits = 2))
+}
+```
+
+
+
+```{r cxn-plot-ROB, fig.cap = "Distribusi padanan bahasa Indonesia konstruksi verba ROB", fig.asp = 0.718, fig.width = 7.85}
+p1_rob_cxn_idn <- rob_cxn %>% 
+  ggplot(aes(x = CXN_ENG_lab, y = a, fill = CXN_IDN_col)) + 
+  geom_col(position = position_dodge(.9)) +
+  geom_text(aes(label = a), 
+            position = position_dodge(.9), 
+            vjust = -.5,
+            size = 4) +
+  labs(x = "Construction types (English)",
+       y = "Token frequency",
+       fill = "Construction types\n(Indonesian)") +
+  theme_light() +
+  theme(axis.text = element_text(size = 9.75),
+        axis.title = element_text(size = 14),
+        legend.text = element_text(size = 9.75),
+        legend.title = element_text(size = 14),
+        plot.title = element_text(size = 15)) +
+  scale_fill_manual(values = cxn_idn_colours[names(cxn_idn_colours) %in% unique(rob_cxn$CXN_IDN)])
+
+p1_rob_cxn_idn
+
+ggsave("figs/plot-cxn-equivalence-ROB.png", plot = p1_rob_cxn_idn, height = 6, width = 8, dpi = 300)
+  
+```
+
+```{r cxn-fye-ROB}
+## FYE computation=======
+rob_cxn_fye <- rob_cxn %>% 
+  select(-CXN_ENG_lab, -CXN_IDN_col) %>% 
+  complete(CXN_ENG, CXN_IDN, fill = list(a = 0L)) %>% 
+  left_join(rob_cxn_eng, by = "CXN_ENG") %>% 
+  left_join(rob_cxn_idn, by = "CXN_IDN") %>% 
+  mutate(perc = (a/N_CXN_ENG) * 100,
+         SUM = sum(a),
+         b = N_CXN_ENG - a,
+         c = N_CXN_IDN - a,
+         d = SUM - (a + b + c),
+         a_exp = (N_CXN_ENG * N_CXN_IDN)/SUM,
+         assoc = if_else(a > a_exp, "attraction", "repulsion"),
+         alt = if_else(a > a_exp, "greater", "less"),
+         pfye = pmap_dbl(list(a, b, c, d, alt), fye_compute),
+         collstr = if_else(alt == "greater", -log10(pfye), log10(pfye)),
+         pholm = p.adjust(pfye, method = "holm"),
+         signif_fye = if_else(pfye < 0.05, TRUE, FALSE),
+         signif_holm = if_else(pholm < 0.05, TRUE, FALSE),
+         signif_holm_dec = if_else(pholm < 0.05 & pholm > 0.01, "*", "ns"),
+         signif_holm_dec = if_else(pholm < 0.01 & pholm > 0.001, "**", signif_holm_dec),
+         signif_holm_dec = if_else(pholm < 0.001, "***", signif_holm_dec),
+         odds_ratio = pmap_dbl(list(a, b, c, d, alt), oddsratio),
+         phi = pmap_dbl(list(a, b, c, d), phicoefficient))
+rob_cxn_fye_short <- rob_cxn_fye %>% 
+  select(-N_CXN_ENG, -N_CXN_IDN, -SUM, -b, -c, -d, -a_exp, -alt, -signif_fye, -signif_holm) %>% 
+  arrange(desc(collstr))
+rob_cxn_fye_significant <- rob_cxn_fye_short %>% 
+  filter(signif_holm_dec != "ns", pholm < 0.001)
+```
+
+p-value (Holm's adjustment) for T-obj_T-obj pattern = `r rob_cxn_fye_significant %>% filter(CXN_ENG == "TARGET-OBJ", CXN_IDN == "TARGET-OBJ") %>% pull(pholm) %>% format(digits = 4)`. The effect is strong (Phi-coefficient = `r rob_cxn_fye_significant %>% filter(CXN_ENG == "TARGET-OBJ", CXN_IDN == "TARGET-OBJ") %>% pull(phi)`).
+
+
+p-value (Holm's adjustment) for T-subj-pass_T-subj-pass pattern = `r rob_cxn_fye_significant %>% filter(CXN_ENG == "TARGET-SUBJ-PASS", CXN_IDN == "TARGET-SUBJ-PASS") %>% pull(pholm) %>% format(digits = 4)`. The effect is also strong (Phi-coefficient = `r rob_cxn_fye_significant %>% filter(CXN_ENG == "TARGET-SUBJ-PASS", CXN_IDN == "TARGET-SUBJ-PASS") %>% pull(phi)`).
+
+```{r cxn-plot-STEAL, fig.asp = 0.718, fig.cap = "Distribusi padanan bahasa Indonesian konstruksi verba STEAL"}
+steal_colours <- cxn_idn_colours[names(cxn_idn_colours) %in% unique(steal_cxn$CXN_IDN)]
+steal_colours <- steal_colours[order(names(steal_colours))]
+p1_steal_cxn_idn <- steal_cxn %>% 
+  ggplot(aes(x = CXN_ENG_lab, y = a, fill = CXN_IDN_col)) + 
+  geom_col(position = position_dodge(.9)) +
+  geom_text(aes(label = a), 
+            position = position_dodge(.9), 
+            vjust = -.5,
+            size = 4) +
+  labs(x = "Construction types (English)",
+       y = "Token frequency",
+       fill = "Construction types\n(Indonesian)") +
+  theme_light() +
+  theme(axis.text = element_text(size = 9.75),
+        axis.title = element_text(size = 14),
+        legend.text = element_text(size = 9.75),
+        legend.title = element_text(size = 14),
+        plot.title = element_text(size = 15)) +
+  scale_fill_manual(values = steal_colours)
+
+p1_steal_cxn_idn
+
+ggsave("figs/plot-cxn-equivalence-STEAL.png", plot = p1_steal_cxn_idn, height = 6, width = 8, dpi = 300)
+  
+```
+
+
+```{r cxn-fye-STEAL}
+## FYE computation=======
+steal_cxn_fye <- steal_cxn %>% 
+  select(-CXN_ENG_lab, -CXN_IDN_col) %>% 
+  complete(CXN_ENG, CXN_IDN, fill = list(a = 0L)) %>% 
+  left_join(steal_cxn_eng, by = "CXN_ENG") %>% 
+  left_join(steal_cxn_idn, by = "CXN_IDN") %>% 
+  mutate(perc = (a/N_CXN_ENG) * 100,
+         SUM = sum(a),
+         b = N_CXN_ENG - a,
+         c = N_CXN_IDN - a,
+         d = SUM - (a + b + c),
+         a_exp = (N_CXN_ENG * N_CXN_IDN)/SUM,
+         assoc = if_else(a > a_exp, "attraction", "repulsion"),
+         alt = if_else(a > a_exp, "greater", "less"),
+         pfye = pmap_dbl(list(a, b, c, d, alt), fye_compute),
+         collstr = if_else(alt == "greater", -log10(pfye), log10(pfye)),
+         pholm = p.adjust(pfye, method = "holm"),
+         signif_fye = if_else(pfye < 0.05, TRUE, FALSE),
+         signif_holm = if_else(pholm < 0.05, TRUE, FALSE),
+         signif_holm_dec = if_else(pholm < 0.05 & pholm > 0.01, "*", "ns"),
+         signif_holm_dec = if_else(pholm < 0.01 & pholm > 0.001, "**", signif_holm_dec),
+         signif_holm_dec = if_else(pholm < 0.001, "***", signif_holm_dec),
+         odds_ratio = pmap_dbl(list(a, b, c, d, alt), oddsratio),
+         phi = pmap_dbl(list(a, b, c, d), phicoefficient))
+steal_cxn_fye_short <- steal_cxn_fye %>% 
+  select(-N_CXN_ENG, -N_CXN_IDN, -SUM, -b, -c, -d, -a_exp, -alt, -signif_fye, -signif_holm) %>% 
+  arrange(desc(collstr))
+steal_cxn_fye_significant <- steal_cxn_fye_short %>% 
+  filter(signif_holm_dec != "ns", pholm < 0.001)
+```
+
+p-value (Holm's adjustment) for G-obj_G-obj pattern = `r steal_cxn_fye_significant %>% filter(CXN_ENG == "GOODS-OBJ", CXN_IDN == "GOODS-OBJ") %>% pull(pholm) %>% format(digits = 4)`. The effect is strong (Phi-coefficient = `r steal_cxn_fye_significant %>% filter(CXN_ENG == "GOODS-OBJ", CXN_IDN == "GOODS-OBJ") %>% pull(phi)`).
+
+
+p-value (Holm's adjustment) for G-subj-pass_G-subj-pass pattern = `r steal_cxn_fye_significant %>% filter(CXN_ENG == "GOODS-SUBJ-PASS", CXN_IDN == "GOODS-SUBJ-PASS") %>% pull(pholm) %>% format(digits = 4)`. The effect is also strong (Phi-coefficient = `r steal_cxn_fye_significant %>% filter(CXN_ENG == "GOODS-SUBJ-PASS", CXN_IDN == "GOODS-SUBJ-PASS") %>% pull(phi)`).
