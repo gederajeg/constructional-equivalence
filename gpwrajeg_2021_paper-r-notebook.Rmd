@@ -509,6 +509,10 @@ steal_goods_semantics_eng <- steal1 %>%
   count(SEM_ENG_GOODS, sort = TRUE) %>% 
   filter(if_all(where(is.character), ~!is.na(.))) %>% 
   mutate(perc = round(n/sum(n) * 100, 1))
+steal_goods_semantics_eng_no_pronoun <- steal1 %>% 
+  count(SEM_ENG_GOODS, sort = TRUE) %>% 
+  filter(if_all(where(is.character), ~!is.na(.)), SEM_ENG_GOODS != "PRONOUN") %>% 
+  mutate(perc = round(n/sum(n) * 100, 1))
 steal_goods_semantics_idn <- steal1 %>% 
   count(SEM_IDN_GOODS, sort = TRUE) %>% 
   filter(if_all(where(is.character), ~!is.na(.))) %>% 
@@ -532,6 +536,18 @@ rob_target_profile_eng_idn_matrix <- rob_target_profile_eng_idn %>%
   data.frame() %>%
   as.matrix()
 names(attr(rob_target_profile_eng_idn_matrix, "dimnames")) <- c("English", "Indonesian")
+rob_target_animacy <- rob1 %>% 
+  count(ANIMACY_ENG_TARGET, name = "n_rob") %>% 
+  mutate(perc_rob = round(n_rob/sum(n_rob) * 100, 2)) %>% 
+  arrange(desc(n_rob))
+rob_target_type <- rob1 %>% 
+  count(TYPE_ENG_TARGET, name = "n_rob") %>% 
+  mutate(perc_rob = round(n_rob/sum(n_rob) * 100, 2)) %>% 
+  arrange(desc(n_rob))
+rob_target_semantics <- rob1 %>% 
+  count(SEM_ENG_TARGET, name = "n_rob") %>% 
+  mutate(perc_rob = round(n_rob/sum(n_rob) * 100, 2)) %>% 
+  arrange(desc(n_rob))
 
 # ROB's TARGET is always mentioned in English, but there are few cases where it is not mentioned in the translation. So there is only one variable of interest, namely (not-)mention of the Target in Indonesian, with two outcomes: mention vs. not mention of TARGET. This is the motivation to run the Exact Binomial Test
 rob_target_profile_eng_idn_binom <- binom.test(rob_target_profile_eng_idn_matrix)
@@ -551,7 +567,40 @@ names(attr(steal_target_profile_eng_idn_matrix, "dimnames")) <- c("English", "In
 steal_target_profile_eng_idn_fye <- fisher.test(steal_target_profile_eng_idn_matrix)
 steal_target_profile_eng_idn_effsize <- vcd::assocstats(steal_target_profile_eng_idn_matrix)
 steal_target_profile_eng_idn_phicoeff <- steal_target_profile_eng_idn_effsize$phi
+steal_target_animacy <- steal1 %>% 
+  filter(!is.na(ANIMACY_ENG_TARGET)) %>% 
+  count(ANIMACY_ENG_TARGET, name = "n_steal") %>% 
+  mutate(perc_steal = round(n_steal/sum(n_steal) * 100, 2)) %>% 
+  arrange(desc(n_steal))
+steal_target_type <- steal1 %>% 
+  filter(!is.na(TYPE_ENG_TARGET)) %>% 
+  count(TYPE_ENG_TARGET, name = "n_steal") %>% 
+  mutate(perc_steal = round(n_steal/sum(n_steal) * 100, 2)) %>% 
+  arrange(desc(n_steal))
+steal_target_semantics <- steal1 %>% 
+  filter(!is.na(SEM_ENG_TARGET)) %>% 
+  count(SEM_ENG_TARGET, name = "n_steal") %>% 
+  mutate(perc_steal = round(n_steal/sum(n_steal) * 100, 2)) %>% 
+  arrange(desc(n_steal))
+
+
+rob_steal_target_semantics <- steal_target_semantics %>% 
+  full_join(rob_target_semantics, by = "SEM_ENG_TARGET")
+rob_steal_target_semantics1 <- rob_steal_target_semantics %>% 
+  filter(if_all(where(is.numeric), ~!is.na(.))) %>% 
+  mutate(perc_steal = round(n_steal/sum(n_steal) * 100, 1),
+         perc_rob = round(n_rob/sum(n_rob) * 100, 1))
+rob_steal_target_semantics1_mtx <- rob_steal_target_semantics1 %>% 
+  select(matches("^SEM|^n_")) %>% 
+  column_to_rownames("SEM_ENG_TARGET") %>% 
+  as.matrix()
+rob_steal_target_semantics_chisq <- chisq.test(rob_steal_target_semantics1_mtx, correct = FALSE)
+steal_target_pbin <- rob_steal_target_semantics1 %>% pull(n_steal) %>% binom.test() %>% .$p.value
+rob_target_pbin <- rob_steal_target_semantics1 %>% pull(n_rob) %>% binom.test() %>% .$p.value
 ```
+
+
+For the semantic types of the TARGET, HUMAN is highly significantly more often as the filler of the TARGET of STEAL (N=`r rob_steal_target_semantics1 %>% filter(SEM_ENG_TARGET == "HUMAN") %>% pull(n_steal)`; `r rob_steal_target_semantics1 %>% filter(SEM_ENG_TARGET == "HUMAN") %>% pull(perc_steal)`%) compared to the LOCATION/PLACE (N=`r rob_steal_target_semantics1 %>% filter(SEM_ENG_TARGET == "PLACE") %>% pull(n_steal)`; `r rob_steal_target_semantics1 %>% filter(SEM_ENG_TARGET == "PLACE") %>% pull(perc_steal)`%) (*p*~Binomial~ ~two-tailed~ `r if (steal_target_pbin > 0.01 & steal_target_pbin < 0.05) " < 0.05" else if (steal_target_pbin > 0.001 & steal_target_pbin < 0.01) " < 0.01" else if (steal_target_pbin < 0.001) " < 0.001"`). In contrast, for ROB, the distribution of the semantic types of its TARGET as HUMAN (N=`r rob_steal_target_semantics1 %>% filter(SEM_ENG_TARGET == "HUMAN") %>% pull(n_rob)`; `r rob_steal_target_semantics1 %>% filter(SEM_ENG_TARGET == "HUMAN") %>% pull(perc_rob)`%) and LOCATION/PLACE (N=`r rob_steal_target_semantics1 %>% filter(SEM_ENG_TARGET == "PLACE") %>% pull(n_rob)`; `r rob_steal_target_semantics1 %>% filter(SEM_ENG_TARGET == "PLACE") %>% pull(perc_rob)`%) is not significantly different (*p*~Binomial~ ~two-tailed~ `r if (rob_target_pbin > 0.05) paste("=", round(rob_target_pbin, 3), sep = "") else if (rob_target_pbin > 0.01 & rob_target_pbin < 0.05) " < 0.05" else if (rob_target_pbin > 0.001 & rob_target_pbin < 0.01) " < 0.01" else if (rob_target_pbin < 0.001) " < 0.001"`). Overall, the proportion of HUMAN TARGET is greater for STEAL (`r rob_steal_target_semantics1 %>% filter(SEM_ENG_TARGET == "HUMAN") %>% pull(perc_steal)`%) than for ROB (`r rob_steal_target_semantics1 %>% filter(SEM_ENG_TARGET == "HUMAN") %>% pull(perc_rob)`%), while the proportion of LOCATION/PLACE TARGET is greater for ROB (`r rob_steal_target_semantics1 %>% filter(SEM_ENG_TARGET == "PLACE") %>% pull(perc_rob)`%) than for STEAL (`r rob_steal_target_semantics1 %>% filter(SEM_ENG_TARGET == "PLACE") %>% pull(perc_steal)`%); these asymmetries are statistically significant (*X*^2^=`r round(rob_steal_target_semantics_chisq$statistic, 2)`; *df*=`r rob_steal_target_semantics_chisq$parameter`; *p*~two~~-~~tailed~ `r if (rob_steal_target_semantics_chisq$p.value > 0.05) paste("=", round(rob_steal_target_semantics_chisq$p.value, 3), sep = "") else if (rob_steal_target_semantics_chisq$p.value > 0.01 & rob_steal_target_semantics_chisq$p.value < 0.05) " < 0.05" else if (rob_steal_target_semantics_chisq$p.value > 0.001 & rob_steal_target_semantics_chisq$p.value < 0.01) " < 0.01" else if (rob_steal_target_semantics_chisq$p.value < 0.001) " < 0.001"`) with moderate effect size ($\phi$ =`r round(assocstats(rob_steal_target_semantics1_mtx)$phi, 3)`).
 
 
 ### constructional equivalence for the (de-)profiling of THIEF
