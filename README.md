@@ -17,6 +17,8 @@ a
 Commons Attribution-NonCommercial-ShareAlike 4.0 International
 License</a>. <!-- badges: end -->
 
+## Overview
+
 The repository of [RStudio
 project](https://r4ds.had.co.nz/workflow-projects.html) ([Wickham &
 Grolemund 2017:chap. 8](#ref-wickham_r_2017)) and the supplementary
@@ -27,9 +29,24 @@ project](https://udayananetworking.unud.ac.id/lecturer/research/880-gede-primaha
 submitted to [PAROLE: Journal of Linguistics and
 Education](https://ejournal.undip.ac.id/index.php/parole).
 
-More to come…
+## Materials
 
-# References
+1.  The main, annotated parallel-concordance data are available under
+    the name `ROB_sample_conc_main.tsv` and
+    `STEAL_sample_conc_main.tsv`. They are tab-separated files that can
+    be open in spreadsheet software.
+
+2.  The R data file `freq-THEFT-verbs.rds` contain the raw frequency
+    data for the word forms of the lemmas ROB and STEAL.
+
+3.  The R codes for the analyses are included in the R Markdown Notebook
+    file `gpwrajeg_2021_paper-r-notebook.Rmd`. This file also include
+    the in-line R codes to generate the statistics within the body-text
+    of the paper.
+
+4.  All figures in the paper are available in the `figs` folder.
+
+## References
 
 <div id="refs" class="references csl-bib-body hanging-indent">
 

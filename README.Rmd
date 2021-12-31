@@ -20,8 +20,18 @@ knitr::opts_chunk$set(
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a> [![](https://img.shields.io/badge/doi-10.17605/OSF.IO/PZC8Y-lightblue.svg)](https://doi.org/10.17605/OSF.IO/PZC8Y) <br />The supplementary materials in this repository are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
 <!-- badges: end -->
 
+## Overview
+
 The repository of [RStudio project](https://r4ds.had.co.nz/workflow-projects.html) [@wickham_r_2017, chapter 8] and the supplementary materials [@Rajeg_Constructional_equivalence_in_2021] for the paper on the topic of constructional equivalence based on [this project](https://udayananetworking.unud.ac.id/lecturer/research/880-gede-primahadi-wijaya-rajeg/a-model-for-translation-study-based-on-english-indonesian-translation-database-and-its-pedagogical-implication-1179) [@rajeg_material_2021]. The paper has just been submitted to [PAROLE: Journal of Linguistics and Education](https://ejournal.undip.ac.id/index.php/parole).
 
-More to come...
+## Materials
 
-# References
+1. The main, annotated parallel-concordance data are available under the name `ROB_sample_conc_main.tsv` and `STEAL_sample_conc_main.tsv`. They are tab-separated files that can be open in spreadsheet software.
+
+1. The R data file `freq-THEFT-verbs.rds` contain the raw frequency data for the word forms of the lemmas ROB and STEAL.
+
+1. The R codes for the analyses are included in the R Markdown Notebook file `gpwrajeg_2021_paper-r-notebook.Rmd`. This file also include the in-line R codes to generate the statistics within the body-text of the paper.
+
+1. All figures in the paper are available in the `figs` folder.
+
+## References
