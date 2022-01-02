@@ -27,7 +27,9 @@ for the paper on the topic of constructional equivalence based on [this
 project](https://udayananetworking.unud.ac.id/lecturer/research/880-gede-primahadi-wijaya-rajeg/a-model-for-translation-study-based-on-english-indonesian-translation-database-and-its-pedagogical-implication-1179)
 ([Rajeg et al. 2021](#ref-rajeg_material_2021)). The paper has just been
 submitted to [PAROLE: Journal of Linguistics and
-Education](https://ejournal.undip.ac.id/index.php/parole).
+Education](https://ejournal.undip.ac.id/index.php/parole). This GitHub
+repository is also linked to the [*Open Science
+Framework*](https://osf.io/pzc8y/) repository.
 
 ## Materials
 
