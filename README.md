@@ -25,8 +25,8 @@ Grolemund 2017:chap. 8](#ref-wickham_r_2017)) and the supplementary
 materials ([Rajeg 2021](#ref-Rajeg_Constructional_equivalence_in_2021))
 for the paper on the topic of constructional equivalence based on [this
 project](https://udayananetworking.unud.ac.id/lecturer/research/880-gede-primahadi-wijaya-rajeg/a-model-for-translation-study-based-on-english-indonesian-translation-database-and-its-pedagogical-implication-1179)
-([Rajeg et al. 2021](#ref-rajeg_material_2021)). The paper has just been
-submitted to [PAROLE: Journal of Linguistics and
+([Rajeg et al. 2021](#ref-rajeg_material_2021)). The paper is currently
+under review at [PAROLE: Journal of Linguistics and
 Education](https://ejournal.undip.ac.id/index.php/parole). This GitHub
 repository is also linked to the [*Open Science
 Framework*](https://osf.io/pzc8y/) repository.
@@ -34,9 +34,12 @@ Framework*](https://osf.io/pzc8y/) repository.
 ## Materials
 
 1.  The main, annotated parallel-concordance data are available under
-    the name `ROB_sample_conc_main.tsv` and
-    `STEAL_sample_conc_main.tsv`. They are tab-separated files that can
-    be open in spreadsheet software.
+    the name
+    [`ROB_sample_conc_main.tsv`](https://github.com/gederajeg/constructional-equivalence/blob/main/ROB_sample_conc_main.tsv)
+    and
+    [`STEAL_sample_conc_main.tsv`](https://github.com/gederajeg/constructional-equivalence/blob/main/STEAL_sample_conc_main.tsv).
+    They are tab-separated files that can be open in spreadsheet
+    software.
 
 2.  The R data file `freq-THEFT-verbs.rds` contain the raw frequency
     data for the word forms of the lemmas ROB and STEAL.
