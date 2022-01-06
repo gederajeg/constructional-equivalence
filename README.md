@@ -41,8 +41,10 @@ Framework*](https://osf.io/pzc8y/) repository.
     They are tab-separated files that can be open in spreadsheet
     software.
 
-2.  The R data file `freq-THEFT-verbs.rds` contain the raw frequency
-    data for the word forms of the lemmas ROB and STEAL.
+2.  The R data file
+    [`freq-THEFT-verbs.rds`](https://github.com/gederajeg/constructional-equivalence/blob/main/freq-THEFT-verbs.rds)
+    contain the raw frequency data for the word forms of the lemmas ROB
+    and STEAL.
 
 3.  The R codes for the analyses are included in the R Markdown Notebook
     file `gpwrajeg_2021_paper-r-notebook.Rmd`. This file also include
