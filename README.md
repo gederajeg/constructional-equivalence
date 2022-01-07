@@ -47,9 +47,10 @@ Framework*](https://osf.io/pzc8y/) repository.
     and STEAL.
 
 3.  The R codes for the analyses are included in the R Markdown Notebook
-    file `gpwrajeg_2021_paper-r-notebook.Rmd`. This file also include
-    the in-line R codes to generate the statistics within the body-text
-    of the paper.
+    file
+    [`gpwrajeg_2021_paper-r-notebook.Rmd`](https://github.com/gederajeg/constructional-equivalence/blob/main/gpwrajeg_2021_paper-r-notebook.Rmd).
+    This file also includes the in-line R codes to generate the
+    statistics within the body-text of the paper.
 
 4.  All figures in the paper are available in the `figs` folder.
 
