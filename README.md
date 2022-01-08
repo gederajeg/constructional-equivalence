@@ -52,7 +52,9 @@ Framework*](https://osf.io/pzc8y/) repository.
     This file also includes the in-line R codes to generate the
     statistics within the body-text of the paper.
 
-4.  All figures in the paper are available in the `figs` folder.
+4.  All figures in the paper are available in the
+    [`figs`](https://github.com/gederajeg/constructional-equivalence/tree/main/figs)
+    folder.
 
 ## References
 
