@@ -50,7 +50,12 @@ Framework*](https://osf.io/pzc8y/) repository.
     file
     [`gpwrajeg_2021_paper-r-notebook.Rmd`](https://github.com/gederajeg/constructional-equivalence/blob/main/gpwrajeg_2021_paper-r-notebook.Rmd).
     This file also includes the in-line R codes to generate the
-    statistics within the body-text of the paper.
+    statistics within the body-text of the paper. The following R
+    packages are needed to run the R codes in the R Markdown Notebook:
+
+    -   the `tidyverse` suit of packages
+    -   the `RColorBrewer` package
+    -   the `vcd` package
 
 4.  All figures in the paper are available in the
     [`figs`](https://github.com/gederajeg/constructional-equivalence/tree/main/figs)
