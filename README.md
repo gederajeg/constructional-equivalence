@@ -53,7 +53,7 @@ Framework*](https://osf.io/pzc8y/) repository.
     statistics within the body-text of the paper. The following R
     packages are needed to run the R codes in the R Markdown Notebook:
 
-    -   the `tidyverse` suit of packages
+    -   the [`tidyverse`](https://www.tidyverse.org) suit of packages
     -   the `RColorBrewer` package
     -   the `vcd` package
 
