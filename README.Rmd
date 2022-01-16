@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-The repository of [RStudio project](https://r4ds.had.co.nz/workflow-projects.html) [@wickham_r_2017, chapter 8] and the supplementary materials [@Rajeg_Constructional_equivalence_in_2021] for the paper on the topic of constructional equivalence based on [this project](https://udayananetworking.unud.ac.id/lecturer/research/880-gede-primahadi-wijaya-rajeg/a-model-for-translation-study-based-on-english-indonesian-translation-database-and-its-pedagogical-implication-1179) [@rajeg_material_2021]. The paper is currently under review at [PAROLE: Journal of Linguistics and Education](https://ejournal.undip.ac.id/index.php/parole). This GitHub repository is also linked to the [*Open Science Framework*](https://osf.io/pzc8y/) repository.
+The repository of [RStudio project](https://r4ds.had.co.nz/workflow-projects.html) [@wickham_r_2017] and the supplementary materials [@Rajeg_Constructional_equivalence_in_2021] for the paper on the topic of constructional equivalence based on [this project](https://udayananetworking.unud.ac.id/lecturer/research/880-gede-primahadi-wijaya-rajeg/a-model-for-translation-study-based-on-english-indonesian-translation-database-and-its-pedagogical-implication-1179) [@rajeg_material_2021]. The paper is currently under review at [PAROLE: Journal of Linguistics and Education](https://ejournal.undip.ac.id/index.php/parole). This GitHub repository is also linked to the [*Open Science Framework*](https://osf.io/pzc8y/) repository.
 
 ## Materials
 
@@ -33,10 +33,16 @@ The repository of [RStudio project](https://r4ds.had.co.nz/workflow-projects.htm
 1. The R codes for the analyses are included in the R Markdown Notebook file [`gpwrajeg_2021_paper-r-notebook.Rmd`](https://github.com/gederajeg/constructional-equivalence/blob/main/gpwrajeg_2021_paper-r-notebook.Rmd). This file also includes the in-line R codes to generate the statistics within the body-text of the paper. The following R packages are needed to run the R codes in the R Markdown Notebook:
 
     - the [`tidyverse`](https://www.tidyverse.org) suit of packages
-    - the `RColorBrewer` package
+    - the [`RColorBrewer`](https://cran.r-project.org/web/packages/RColorBrewer/index.html) package
     - the `vcd` package
 
 
 1. All figures in the paper are available in the [`figs`](https://github.com/gederajeg/constructional-equivalence/tree/main/figs) folder.
+
+## R session info
+
+```{r sessinfo}
+devtools::session_info()
+```
 
 ## References
