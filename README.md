@@ -57,7 +57,9 @@ Framework*](https://osf.io/pzc8y/) repository.
     -   the
         [`RColorBrewer`](https://cran.r-project.org/web/packages/RColorBrewer/index.html)
         package
-    -   the `vcd` package
+    -   the
+        [`vcd`](https://cran.r-project.org/web/packages/vcd/index.html)
+        package
 
 4.  All figures in the paper are available in the
     [`figs`](https://github.com/gederajeg/constructional-equivalence/tree/main/figs)
@@ -77,7 +79,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       Asia/Makassar
-#>  date     2022-01-16
+#>  date     2022-01-18
 #>  pandoc   2.14.0.3 @ /Applications/RStudio.app/Contents/MacOS/pandoc/ (via rmarkdown)
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
