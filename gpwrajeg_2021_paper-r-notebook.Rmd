@@ -1,13 +1,16 @@
 ---
-title: "R Notebook for *A corpus-based study of constructional equivalence for the Indonesian translation of ROB and STEAL*"
+title: R Notebook for *A corpus-based study of constructional equivalence for the
+  Indonesian translation of ROB and STEAL based on the __OpenSubtitle__ English-Indonesian Parallel Corpus*
 author: '[Gede Primahadi Wijaya Rajeg](https://udayananetworking.unud.ac.id/lecturer/880-gede-primahadi-wijaya-rajeg) <a itemprop="sameAs" content="https://orcid.org/0000-0002-2047-8621" href="https://orcid.org/0000-0002-2047-8621" target="orcid.widget" rel="noopener noreferrer" style="vertical-align:top;"><img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" style="width:1em;margin-right:.5em;" alt="ORCID iD icon"></a>'
-output: 
+output:
+  word_document:
+    toc: yes
   html_notebook:
     fig_caption: yes
     fig_width: 6
     fig_retina: 2
-    toc: true
-    toc_float: true
+    toc: yes
+    toc_float: yes
 ---
 
 ```{r setup, message = FALSE, warning = FALSE, include = FALSE}
@@ -37,7 +40,7 @@ If you use, or are inspired by, the codes, the data, and analyses from this stud
 
 - citation for the paper (to be updated when published):
 
-```{r load-main-ROB-and-STEAL-data, message = FALSE, warning = FALSE, include = TRUE}
+```{r load-main-ROB-and-STEAL-data, message = FALSE, warning = FALSE, include = FALSE}
 rob <- readr::read_tsv("ROB_sample_conc_main.tsv")
 steal <- readr::read_tsv("STEAL_sample_conc_main.tsv")
 ```
@@ -253,6 +256,32 @@ steal_eng_profiled_participants_coreargs_binom <- steal_eng_profiled_participant
          lemma = "STEAL",
          perc_coreargs = round(`TRUE`/n * 100, 1),
          perc_non_coreargs = round(`FALSE`/n * 100, 1))
+```
+
+
+### Analysis for the lexical equivalence for ROB and STEAL
+
+```{r lexical-equivalence-database, include = FALSE, message = FALSE}
+rob_equivalence_df <- read_tsv("https://raw.githubusercontent.com/gederajeg/rob-steal-parallel-corpora/main/SENASTEK/SENASTEK_data_rob1.txt")
+steal_equivalence_df <- read_tsv("https://raw.githubusercontent.com/gederajeg/rob-steal-parallel-corpora/main/SENASTEK/SENASTEK_data_steal1.txt")
+```
+
+
+This study is based on data in Rajeg et al. [-@rajeg_pemanfaatan_2021]. [Table \@ref(tab:lex-equivalence-rob)](#lex-equivalence-rob) shows the lexical equivalence in Indonesian for word forms of the lemma ROB and [Table \@ref(tab:lex-equivalence-steal)](#lex-equivalence-steal) shows the same data for the lemma STEAL.
+
+```{r lexical-equivalence-table}
+rob_lex_equiv <- rename(summarise(arrange(group_by(count(rob_equivalence_df, NODE, TRANSLATION_NODE), NODE), desc(n), desc(TRANSLATION_NODE)), `Indonesian translation` = paste(paste("*", TRANSLATION_NODE, "* (", n, ")", sep = ""), collapse = "; ")), `English form` = NODE)
+
+steal_lex_equiv <- rename(summarise(arrange(group_by(count(steal_equivalence_df, NODE, TRANSLATION_NODE), NODE), desc(n), desc(TRANSLATION_NODE)), `Indonesian translation` = paste(paste("*", TRANSLATION_NODE, "* (", n, ")", sep = ""), collapse = "; ")), `English form` = NODE)
+```
+
+```{r lex-equivalence-rob}
+knitr::kable(rob_lex_equiv, caption = "Indonesian lexical equivalence for word forms of the lemma ROB")
+```
+
+
+```{r lex-equivalence-steal}
+knitr::kable(steal_lex_equiv, caption = "Indonesian lexical equivalence for word forms of the lemma STEAL")
 ```
 
 
