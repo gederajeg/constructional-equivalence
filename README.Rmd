@@ -22,7 +22,13 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-The repository of [RStudio project](https://r4ds.had.co.nz/workflow-projects.html) [@wickham_r_2017] and the supplementary materials [@Rajeg_Constructional_equivalence_in_2021] for the paper on the topic of constructional equivalence based on [this project](https://udayananetworking.unud.ac.id/lecturer/research/880-gede-primahadi-wijaya-rajeg/a-model-for-translation-study-based-on-english-indonesian-translation-database-and-its-pedagogical-implication-1179) [@rajeg_material_2021]. The paper has been _accepted for publication_ at [PAROLE: Journal of Linguistics and Education](https://ejournal.undip.ac.id/index.php/parole). This GitHub repository is also linked to the [*Open Science Framework*](https://osf.io/pzc8y/) repository.
+The repository of [RStudio project](https://r4ds.had.co.nz/workflow-projects.html) [@wickham_r_2017] and the supplementary materials [@Rajeg_Constructional_equivalence_in_2021] for a paper on the topic of constructional equivalence [@rajeg_corpus_2022] based on [this research project](https://udayananetworking.unud.ac.id/lecturer/research/880-gede-primahadi-wijaya-rajeg/a-model-for-translation-study-based-on-english-indonesian-translation-database-and-its-pedagogical-implication-1179) [@rajeg_material_2021]. The paper has been [_published_](https://ejournal.undip.ac.id/index.php/parole/article/view/43717) #OpenAccess at [PAROLE: Journal of Linguistics and Education](https://ejournal.undip.ac.id/index.php/parole): 
+
+> Rajeg, Gede Primahadi Wijaya & I Made Rajeg. 2022. A corpus linguistic study of constructional equivalence for the Indonesian translation of ROB and STEAL based on the OpenSubtitles Parallel Corpus. *PAROLE: Journal of Linguistics and Education* 12(2). 28–48. https://ejournal.undip.ac.id/index.php/parole/article/view/43717
+
+The paper also comes with an accompanying [R](https://www.r-project.org) package called [*paracorp*](https://gederajeg.github.io/paracorp/) [see @rajeg_paracorp_2021], which was designed to generate the parallel keyword in context display from the parallel corpus. A related paper to this one (written in Indonesian) focuses on the norm of Indonesian lexical equivalence for ROB and STEAL [see @rajeg_pemanfaatan_2021].
+
+This GitHub repository is linked to the [*Open Science Framework*](https://osf.io/pzc8y/).
 
 ## Materials
 

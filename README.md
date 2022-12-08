@@ -22,14 +22,31 @@ License</a>. <!-- badges: end -->
 The repository of [RStudio
 project](https://r4ds.had.co.nz/workflow-projects.html) ([Wickham &
 Grolemund 2017](#ref-wickham_r_2017)) and the supplementary materials
-([Rajeg 2021](#ref-Rajeg_Constructional_equivalence_in_2021)) for the
-paper on the topic of constructional equivalence based on [this
+([Rajeg 2021b](#ref-Rajeg_Constructional_equivalence_in_2021)) for a
+paper on the topic of constructional equivalence ([Rajeg & Rajeg
+2022](#ref-rajeg_corpus_2022)) based on [this research
 project](https://udayananetworking.unud.ac.id/lecturer/research/880-gede-primahadi-wijaya-rajeg/a-model-for-translation-study-based-on-english-indonesian-translation-database-and-its-pedagogical-implication-1179)
-([Rajeg et al. 2021](#ref-rajeg_material_2021)). The paper has been
-*accepted for publication* at [PAROLE: Journal of Linguistics and
-Education](https://ejournal.undip.ac.id/index.php/parole). This GitHub
-repository is also linked to the [*Open Science
-Framework*](https://osf.io/pzc8y/) repository.
+([Rajeg et al. 2021b](#ref-rajeg_material_2021)). The paper has been
+[*published*](https://ejournal.undip.ac.id/index.php/parole/article/view/43717)
+\#OpenAccess at [PAROLE: Journal of Linguistics and
+Education](https://ejournal.undip.ac.id/index.php/parole):
+
+> Rajeg, Gede Primahadi Wijaya & I Made Rajeg. 2022. A corpus linguistic
+> study of constructional equivalence for the Indonesian translation of
+> ROB and STEAL based on the OpenSubtitles Parallel Corpus. *PAROLE:
+> Journal of Linguistics and Education* 12(2). 28–48.
+> <https://ejournal.undip.ac.id/index.php/parole/article/view/43717>
+
+The paper also comes with an accompanying [R](https://www.r-project.org)
+package called [*paracorp*](https://gederajeg.github.io/paracorp/) (see
+[Rajeg 2021a](#ref-rajeg_paracorp_2021)), which was designed to generate
+the parallel keyword in context display from the parallel corpus. A
+related paper to this one (written in Indonesian) focuses on the norm of
+Indonesian lexical equivalence for ROB and STEAL (see [Rajeg et al.
+2021a](#ref-rajeg_pemanfaatan_2021)).
+
+This GitHub repository is linked to the [*Open Science
+Framework*](https://osf.io/pzc8y/).
 
 ## Materials
 
@@ -53,13 +70,13 @@ Framework*](https://osf.io/pzc8y/) repository.
     statistics within the body-text of the paper. The following R
     packages are needed to run the R codes in the R Markdown Notebook:
 
-    -   the [`tidyverse`](https://www.tidyverse.org) suit of packages
-    -   the
-        [`RColorBrewer`](https://cran.r-project.org/web/packages/RColorBrewer/index.html)
-        package
-    -   the
-        [`vcd`](https://cran.r-project.org/web/packages/vcd/index.html)
-        package
+    - the [`tidyverse`](https://www.tidyverse.org) suit of packages
+    - the
+      [`RColorBrewer`](https://cran.r-project.org/web/packages/RColorBrewer/index.html)
+      package
+    - the
+      [`vcd`](https://cran.r-project.org/web/packages/vcd/index.html)
+      package
 
 4.  All figures in the paper are available in the
     [`figs`](https://github.com/gederajeg/constructional-equivalence/tree/main/figs)
@@ -79,8 +96,8 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       Asia/Makassar
-#>  date     2022-10-26
-#>  pandoc   2.18 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
+#>  date     2022-12-09
+#>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/MacOS/quarto/bin/tools/ (via rmarkdown)
 #> 
 #> ─ Packages ───────────────────────────────────────────────────────────────────
 #>  package     * version date (UTC) lib source
@@ -132,20 +149,54 @@ devtools::session_info()
 
 <div id="refs" class="references csl-bib-body hanging-indent">
 
+<div id="ref-rajeg_paracorp_2021" class="csl-entry">
+
+Rajeg, Gede Primahadi Wijaya. 2021a. *Paracorp: A concordancer for
+parallel, bilingual corpora*. R package v0.0.1. Bali, Indonesia:
+Universitas Udayana.
+doi:[10.17605/OSF.IO/HV9CU](https://doi.org/10.17605/OSF.IO/HV9CU).
+<https://github.com/gederajeg/paracorp>.
+
+</div>
+
 <div id="ref-Rajeg_Constructional_equivalence_in_2021"
 class="csl-entry">
 
-Rajeg, Gede Primahadi Wijaya. 2021. *<span class="nocase">Constructional
-equivalence in the Indonesian translations of ROB and STEAL</span>*.
+Rajeg, Gede Primahadi Wijaya. 2021b. *<span
+class="nocase">Constructional equivalence in the Indonesian translations
+of ROB and STEAL</span>*.
 doi:[10.17605/OSF.IO/PZC8Y](https://doi.org/10.17605/OSF.IO/PZC8Y).
 <https://github.com/gederajeg/constructional-equivalence>.
+
+</div>
+
+<div id="ref-rajeg_corpus_2022" class="csl-entry">
+
+Rajeg, Gede Primahadi Wijaya & I Made Rajeg. 2022. A corpus linguistic
+study of constructional equivalence for the Indonesian translation of
+ROB and STEAL based on the OpenSubtitles Parallel Corpus. *PAROLE:
+Journal of Linguistics and Education* 12(2). 28–48.
+<https://ejournal.undip.ac.id/index.php/parole/article/view/43717>.
+
+</div>
+
+<div id="ref-rajeg_pemanfaatan_2021" class="csl-entry">
+
+Rajeg, Gede Primahadi Wijaya, I Made Rajeg, Putu Dea Indah Kartini & I
+Gede Semara Dharma Putra. 2021a. Pemanfaatan Bank-Data Digital Dwibahasa
+dalam Kajian Terjemahan: Studi Kasus Padanan Bahasa Indonesia untuk
+Verba Sinonim Bahasa Inggris ROB & STEAL. *Prosiding Seminar Nasional
+Sains dan Teknologi (SENASTEK) 2021*, 0831–0835. Bali, Indonesia:
+Lembaga Penelitian dan Pengabdian kepada Masyarakat (LPPM) Universitas
+Udayana.
+doi:[10.6084/m9.figshare.17078369](https://doi.org/10.6084/m9.figshare.17078369).
 
 </div>
 
 <div id="ref-rajeg_material_2021" class="csl-entry">
 
 Rajeg, Gede Primahadi Wijaya, I Made Rajeg, Putu Dea Indah Kartini & I
-Gede Semara Dharma Putra. 2021. Material pendukung untuk *MODEL KAJIAN
+Gede Semara Dharma Putra. 2021b. Material pendukung untuk *MODEL KAJIAN
 TERJEMAHAN BERBASIS BANK DATA TERJEMAHAN DIGITAL INGGRIS-INDONESIA DAN
 IMPLIKASI PEDAGOGISNYA*. Open Science Framework.
 doi:[10.17605/OSF.IO/Y6ESA](https://doi.org/10.17605/OSF.IO/Y6ESA).
